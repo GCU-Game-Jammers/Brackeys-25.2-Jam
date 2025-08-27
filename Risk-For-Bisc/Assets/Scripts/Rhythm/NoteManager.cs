@@ -37,6 +37,9 @@ public class NoteManager : MonoBehaviour
 
     public Transform container;
 
+    public AudioSource tapSfx;
+    public AudioSource hitNoteSfx;
+
     [Header("Timing & Movement")]
     public float arrowSpeed = 5f;
     public float perfectWindow = 0.08f;
@@ -70,12 +73,12 @@ public class NoteManager : MonoBehaviour
             Spawn(Direction.Right);
     }
 
-    public void SpawnLeftArrow(float dspTime = 0) => Spawn(Direction.Left, dspTime);
-    public void SpawnDownArrow(float dspTime = 0) => Spawn(Direction.Down, dspTime);
-    public void SpawnUpArrow(float dspTime = 0) => Spawn(Direction.Up, dspTime);
-    public void SpawnRightArrow(float dspTime = 0) => Spawn(Direction.Right, dspTime);
+    public void SpawnLeftArrow(float timeTillShouldClick = 0) => Spawn(Direction.Left, timeTillShouldClick);
+    public void SpawnDownArrow(float timeTillShouldClick = 0) => Spawn(Direction.Down, timeTillShouldClick);
+    public void SpawnUpArrow(float timeTillShouldClick = 0) => Spawn(Direction.Up, timeTillShouldClick);
+    public void SpawnRightArrow(float timeTillShouldClick = 0) => Spawn(Direction.Right, timeTillShouldClick);
 
-    private void Spawn(Direction dir, float dspTime = 0)
+    private void Spawn(Direction dir, float timeTillShouldClick = 0)
     {
         var arrowPrefab = GetArrowPrefab(dir);
         var spawnPoint = GetArrowSpawnPoint(dir);
@@ -83,21 +86,73 @@ public class NoteManager : MonoBehaviour
         if (arrowPrefab == null || spawnPoint == null || hitPoint == null)
             throw new Exception("Fix your shit designers");
 
+        // compute travel time
+        float distance = spawnPoint.position.y - hitPoint.position.y;
+        distance = Mathf.Abs(distance);
+        float travelTime = distance / arrowSpeed;
+
+        // If caller didn't request scheduling, spawn immediately (old behavior)
+        if (timeTillShouldClick <= 0f)
+        {
+            GameObject go = Instantiate(arrowPrefab, spawnPoint.position, Quaternion.identity, container);
+            Arrow a = go.GetComponent<Arrow>();
+            if (a == null) throw new Exception("LOCK IN DESIGNERS. THIS IS NOOB BEHAVIOUR");
+
+            a.direction = dir;
+            a.speed = arrowSpeed;
+            a.noteManager = this;
+            a.hitTime = Time.time + travelTime; // will hit after travelTime from now
+
+            RegisterArrow(a);
+            return;
+        }
+
+        // Desired hit time in future (seconds from now)
+        float desiredHitTime = Time.time + timeTillShouldClick;
+        float spawnTime = desiredHitTime - travelTime;
+        float delay = spawnTime - Time.time;
+
+        // If spawn time is already passed or too soon, spawn immediately and make it hit as soon as possible
+        if (delay <= 0f)
+        {
+            GameObject go = Instantiate(arrowPrefab, spawnPoint.position, Quaternion.identity, container);
+            Arrow a = go.GetComponent<Arrow>();
+            if (a == null) throw new Exception("LOCK IN DESIGNERS. THIS IS NOOB BEHAVIOUR");
+
+            a.direction = dir;
+            a.speed = arrowSpeed;
+            a.noteManager = this;
+            a.hitTime = Time.time + travelTime; // hit as soon as possible
+
+            RegisterArrow(a);
+            return;
+        }
+
+        // Otherwise, delay instantiation so it arrives at the desired hit time
+        StartCoroutine(SpawnAfterDelay(dir, delay, desiredHitTime));
+    }
+
+    private IEnumerator SpawnAfterDelay(Direction dir, float delaySeconds, float desiredHitTime)
+    {
+        yield return new WaitForSeconds(delaySeconds);
+
+        var arrowPrefab = GetArrowPrefab(dir);
+        var spawnPoint = GetArrowSpawnPoint(dir);
+        if (arrowPrefab == null || spawnPoint == null)
+            yield break; // defensive, should not happen
+
         GameObject go = Instantiate(arrowPrefab, spawnPoint.position, Quaternion.identity, container);
         Arrow a = go.GetComponent<Arrow>();
         if (a == null)
-            throw new Exception("LOCK IN DESIGNERS. THIS IS NOOB BEHAVIOUR");
+        {
+            Destroy(go);
+            yield break;
+        }
 
-        // Setup
         a.direction = dir;
         a.speed = arrowSpeed;
         a.noteManager = this;
-
-        // Get expected hit time
-        float distance = spawnPoint.position.y - hitPoint.position.y;
-        if (distance < 0f) distance = -distance; // Abs
-        float travelTime = distance / arrowSpeed;
-        a.hitTime = Time.time + travelTime;
+        a.hitTime = desiredHitTime; // we delayed spawn so this will be correct
 
         RegisterArrow(a);
     }
@@ -143,19 +198,26 @@ public class NoteManager : MonoBehaviour
 
         best.hit = true;
         OnHit?.Invoke(best, result, d);
+        if (result == HitResult.TooFast || result == HitResult.TooSlow)
+            hitNoteSfx.volume = 0.011f;
+        else
+            hitNoteSfx.volume = 0.05f;
+        hitNoteSfx.Play();
     }
     private IEnumerator ClickButton(Direction dir)
     {
         var arrowImage = GetArrowHitPoint(dir).GetComponent<RawImage>();
-        
         var colour = arrowImage.color;
 
         colour.a = 1.0f;
         arrowImage.color = colour;
+        arrowImage.transform.localScale = new Vector3(0.55f, 0.55f, 0.55f);
+        tapSfx.Play();
 
         yield return new WaitForSeconds(0.05f);
 
         colour.a = 0.5f;
+        arrowImage.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         arrowImage.color = colour;
     }
     public void ClearAll()

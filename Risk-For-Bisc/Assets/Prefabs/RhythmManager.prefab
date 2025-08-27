@@ -181,7 +181,7 @@ MonoBehaviour:
   startIndex: 0
   volume: 0.05
   musicSource: {fileID: 3989182792215809865}
-  startDelay: 0.1
+  startDelay: 0
   lookAheadTime: 1
   crossfadeDuration: 2
   startFadeDuration: 1
