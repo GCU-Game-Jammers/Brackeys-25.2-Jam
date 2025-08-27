@@ -10,12 +10,12 @@ public class RhythmManager : MonoBehaviour
     public List<Beatmap> beatmaps = new List<Beatmap>();
     public bool loopPlaylist = true;
     public int startIndex = 0;
-
+    public float volume = 0.1f;
 
     [Header("Audio Sources")]
     public AudioSource musicSource;
     private AudioSource altSource; // Cloned so we can crossfade music
-    
+
     [Header("Timing")]
     public double startDelay = 0.1;
     public double lookAheadTime = 0.2;
@@ -125,7 +125,10 @@ public class RhythmManager : MonoBehaviour
             if (scheduledDsp <= dspNow + lookAheadTime)
             {
                 // Call the beat BE
-                OnBeatEventScheduled?.Invoke(be, scheduledDsp);
+  /*              Debug.Log("Scheduled DSP time = " + scheduledDsp);
+                Debug.Log("Song Time = " + songTime);
+                Debug.Log("DSP = " + ((dspNow + lookAheadTime) - scheduledDsp));*/
+                OnBeatEventScheduled?.Invoke(be, (dspNow + lookAheadTime) - scheduledDsp);
                 track.nextIndex++;
             }
             else break;
@@ -178,8 +181,7 @@ public class RhythmManager : MonoBehaviour
         track.src.PlayScheduled(dspStart);
 
         // Schedule Fade-In
-        float targetVol = 1f;
-        StartCoroutine(ScheduleFadeVolume(track.src, dspStart, fadeInDuration, 0f, targetVol));
+        StartCoroutine(ScheduleFadeVolume(track.src, dspStart, fadeInDuration, 0f, volume));
 
 
         track.nextScheduledForPlaylist = false;
