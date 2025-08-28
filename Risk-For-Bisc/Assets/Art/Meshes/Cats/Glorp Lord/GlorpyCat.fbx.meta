@@ -3,7 +3,12 @@ guid: 28c0718946a01754888943c75fbd33c0
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glorpy
+    second: {fileID: 2100000, guid: 8fac2f0612307a04fab1ea1068ba892b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -15,4 +15,4 @@ MonoBehaviour:
   clip: {fileID: 8300000, guid: dd05805e0b4ebef419ee8c2c8afb6822, type: 3}
   bpm: 0
   offset: 0
-  beatsCSV: {fileID: 4900000, guid: 81ae3681eaa4766498116a41e3ea540b, type: 3}
+  beatsCSV: {fileID: 4900000, guid: 4df743b857b209342925aba54f8f67bc, type: 3}
