@@ -7,7 +7,7 @@ public class LightLerp : MonoBehaviour
     public float duration = 2.0f;
 
     private Light lightComp;
-    private Color[] colors = new Color[] { Color.red, Color.green, Color.blue, Color.yellow };
+    private Color[] colors = new Color[] { Color.red, Color.green, Color.blue };
     private int currentIndex = 0;
 
     void Start()

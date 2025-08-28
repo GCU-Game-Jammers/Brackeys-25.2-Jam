@@ -1,51 +1,64 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class CameraManager : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Camera djCamera;
+    [SerializeField] private Volume postProcessing;
 
+    private Camera activeCamera;
     private Animator anim;
+
+    private PaniniProjection paniniProjection;
 
     private void Awake()
     {
+        activeCamera = mainCamera;
         anim = GetComponent<Animator>();
     }
 
-    private void Start()
+    void Start()
     {
-        StartCoroutine(StartDJCamera());
+        if (postProcessing.profile.TryGet<PaniniProjection>(out paniniProjection));
+        {
+            paniniProjection.distance.value = 0.0f;
+        }
     }
 
-    private IEnumerator StartDJCamera()
+    public void ChangeCamera(int index)
     {
-        yield return new WaitForSeconds(1.0f);
+        if (index == 0) SwitchToMainCamera();
+        else if (index == 1) StartCoroutine(DJCameraSequence());
+        anim.SetInteger("Camera Index", index);
+    }
 
+    private IEnumerator DJCameraSequence()
+    {
         SwitchToDjCamera();
-        anim.SetInteger("Camera Index", 1);
 
         yield return new WaitForSeconds(5.0f);
 
         anim.SetInteger("Camera Index", 2);
-
-        yield return new WaitForSeconds(6.0f);
-
-        anim.SetInteger("Camera Index", 0);
-        SwitchToMainCamera();
     }
 
     #region Camera switching
     private void SwitchToMainCamera()
     {
+        activeCamera = mainCamera;
         mainCamera.enabled = true;
         djCamera.enabled = false;
+        paniniProjection.distance.value = 0.0f;
     }
 
     private void SwitchToDjCamera()
     {
+        activeCamera = djCamera;
         mainCamera.enabled = false;
         djCamera.enabled = true;
+        paniniProjection.distance.value = 1.0f;
     }
     #endregion
 }

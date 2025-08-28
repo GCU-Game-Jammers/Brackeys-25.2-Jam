@@ -1478,6 +1478,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 25577079}
   m_SourcePrefab: {fileID: 100100000, guid: 80894112c1f31014699f68e3a6d51c01, type: 3}
+--- !u!114 &829033225 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3414898924186733600, guid: fc39d376f1a96984e9e83f7c9d10fe29,
+    type: 3}
+  m_PrefabInstance: {fileID: 1930029042331802459}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 957c9b170e584814b884bb86668fe54e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &882456741
 GameObject:
   m_ObjectHideFlags: 0
@@ -2875,6 +2887,11 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 682130269}
+    - target: {fileID: 3414898924186733600, guid: fc39d376f1a96984e9e83f7c9d10fe29,
+        type: 3}
+      propertyPath: postProcessing
+      value: 
+      objectReference: {fileID: 1647994210}
     - target: {fileID: 8365830479023851027, guid: fc39d376f1a96984e9e83f7c9d10fe29,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3042,6 +3059,11 @@ PrefabInstance:
       propertyPath: noteManager
       value: 
       objectReference: {fileID: 619559886}
+    - target: {fileID: 3047961741890010339, guid: 5820701b32ac8b94cb74edf7aab48440,
+        type: 3}
+      propertyPath: cameraManager
+      value: 
+      objectReference: {fileID: 829033225}
     - target: {fileID: 3047961741890010339, guid: 5820701b32ac8b94cb74edf7aab48440,
         type: 3}
       propertyPath: rhythmManager

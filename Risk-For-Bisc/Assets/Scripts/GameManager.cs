@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public RhythmManager rhythmManager;
     public NoteManager noteManager;
-
+    public CameraManager cameraManager;
 
     private void Awake()
     {
@@ -37,6 +37,12 @@ public class GameManager : MonoBehaviour
                 break;
             case 4:// right
                 noteManager.SpawnRightArrow(waitTime);
+                break;
+            case 5:// start camera
+                cameraManager.ChangeCamera(1);
+                break;
+            case 6:// stop camera
+                cameraManager.ChangeCamera(0);
                 break;
             default:
                 Debug.Log("No event setup for index " + beatEvent.type);
