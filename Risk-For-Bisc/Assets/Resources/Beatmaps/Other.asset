@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: Bananas
+  m_Name: Other
   m_EditorClassIdentifier: Assembly-CSharp::Beatmap
-  clip: {fileID: 8300000, guid: 982ff95e0264c6f4989b961c4cb1d813, type: 3}
+  clip: {fileID: 8300000, guid: dd05805e0b4ebef419ee8c2c8afb6822, type: 3}
   bpm: 0
   offset: 0
   beatsCSV: {fileID: 4900000, guid: 81ae3681eaa4766498116a41e3ea540b, type: 3}

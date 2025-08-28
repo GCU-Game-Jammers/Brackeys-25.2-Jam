@@ -91,7 +91,6 @@ public class NoteManager : MonoBehaviour
         distance = Mathf.Abs(distance);
         float travelTime = distance / arrowSpeed;
 
-        // If caller didn't request scheduling, spawn immediately (old behavior)
         if (timeTillShouldClick <= 0f)
         {
             GameObject go = Instantiate(arrowPrefab, spawnPoint.position, Quaternion.identity, container);
@@ -101,7 +100,11 @@ public class NoteManager : MonoBehaviour
             a.direction = dir;
             a.speed = arrowSpeed;
             a.noteManager = this;
-            a.hitTime = Time.time + travelTime; // will hit after travelTime from now
+            a.hitTime = Time.time + travelTime;
+            a.hitPoint = hitPoint.transform.position;
+            a.travelTime = timeTillShouldClick;
+            a.spawnPoint = spawnPoint.transform.position;
+
 
             RegisterArrow(a);
             return;
@@ -123,6 +126,9 @@ public class NoteManager : MonoBehaviour
             a.speed = arrowSpeed;
             a.noteManager = this;
             a.hitTime = Time.time + travelTime; // hit as soon as possible
+            a.hitPoint = hitPoint.transform.position;
+            a.travelTime = timeTillShouldClick;
+            a.spawnPoint = spawnPoint.transform.position;
 
             RegisterArrow(a);
             return;
@@ -134,7 +140,7 @@ public class NoteManager : MonoBehaviour
 
     private IEnumerator SpawnAfterDelay(Direction dir, float delaySeconds, float desiredHitTime)
     {
-        yield return new WaitForSeconds(delaySeconds);
+        yield return new WaitForSecondsRealtime(delaySeconds);
 
         var arrowPrefab = GetArrowPrefab(dir);
         var spawnPoint = GetArrowSpawnPoint(dir);
@@ -153,8 +159,13 @@ public class NoteManager : MonoBehaviour
         a.speed = arrowSpeed;
         a.noteManager = this;
         a.hitTime = desiredHitTime; // we delayed spawn so this will be correct
+        a.hitPoint = GetArrowHitPoint(dir).transform.position;
+        a.travelTime = desiredHitTime - Time.time;
+        a.spawnPoint = spawnPoint.transform.position;
 
         RegisterArrow(a);
+
+        //Debug.Log("Beat playing at " + Time.time);
     }
 
     internal void RegisterArrow(Arrow a)

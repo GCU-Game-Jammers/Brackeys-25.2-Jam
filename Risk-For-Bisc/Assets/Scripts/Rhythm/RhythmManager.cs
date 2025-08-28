@@ -125,10 +125,14 @@ public class RhythmManager : MonoBehaviour
             if (scheduledDsp <= dspNow + lookAheadTime)
             {
                 // Call the beat BE
-  /*              Debug.Log("Scheduled DSP time = " + scheduledDsp);
+                /*Debug.Log("Current DSP time = " + dspNow);
+                Debug.Log("Scheduled DSP time = " + scheduledDsp);
                 Debug.Log("Song Time = " + songTime);
                 Debug.Log("DSP = " + ((dspNow + lookAheadTime) - scheduledDsp));*/
-                OnBeatEventScheduled?.Invoke(be, (dspNow + lookAheadTime) - scheduledDsp);
+                OnBeatEventScheduled?.Invoke(be, scheduledDsp - dspNow);
+                if (be.type != 0)
+                    Debug.Log("Beat " + be.type + " should be scheduled for: " + (Time.time + scheduledDsp - dspNow).ToString("F3")
+                        + ", or music time: " + (altSource.time + scheduledDsp - dspNow).ToString("F3"));
                 track.nextIndex++;
             }
             else break;

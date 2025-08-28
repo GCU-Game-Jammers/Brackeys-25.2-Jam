@@ -21,7 +21,28 @@ public class GameManager : MonoBehaviour
 
     private void BeatEvent(BeatEvent beatEvent, double dspTime)
     {
-        StartCoroutine(PlayNote(beatEvent, dspTime/1000));
+        float waitTime = (float)dspTime;
+        switch (beatEvent.type)
+        {
+            case 0:
+                break;
+            case 1:// left
+                noteManager.SpawnLeftArrow(waitTime);
+                break;
+            case 2:// up
+                noteManager.SpawnUpArrow(waitTime);
+                break;
+            case 3:// down
+                noteManager.SpawnDownArrow(waitTime);
+                break;
+            case 4:// right
+                noteManager.SpawnRightArrow(waitTime);
+                break;
+            default:
+                Debug.Log("No event setup for index " + beatEvent.type);
+                break;
+        }
+        //StartCoroutine(PlayNote(beatEvent, dspTime));
     }
 
     IEnumerator PlayNote(BeatEvent beatEvent, double dspTime)

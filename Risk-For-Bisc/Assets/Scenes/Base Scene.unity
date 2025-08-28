@@ -2654,13 +2654,24 @@ PrefabInstance:
     - target: {fileID: 4802850040808300543, guid: 82c95543268f3354d9efcb3809600db0,
         type: 3}
       propertyPath: startDelay
-      value: 0
+      value: 0.30001713053
       objectReference: {fileID: 0}
     - target: {fileID: 4802850040808300543, guid: 82c95543268f3354d9efcb3809600db0,
         type: 3}
       propertyPath: lookAheadTime
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4802850040808300543, guid: 82c95543268f3354d9efcb3809600db0,
+        type: 3}
+      propertyPath: beatmaps.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4802850040808300543, guid: 82c95543268f3354d9efcb3809600db0,
+        type: 3}
+      propertyPath: beatmaps.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 814521eaa6953b443908474428e944df,
+        type: 2}
     - target: {fileID: 8859526515746380419, guid: 82c95543268f3354d9efcb3809600db0,
         type: 3}
       propertyPath: m_Name
