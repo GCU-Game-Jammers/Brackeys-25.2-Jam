@@ -812,8 +812,9 @@ PlayerSettings:
     PS4: 
     PS5: 
     QNX: 
+    Server: PROBUILDER_EXPERIMENTAL_FEATURES
     Stadia: 
-    Standalone: 
+    Standalone: PROBUILDER_EXPERIMENTAL_FEATURES
     VisionOS: 
     WebGL: 
     Windows Store Apps: 

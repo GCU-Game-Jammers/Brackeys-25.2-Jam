@@ -10,7 +10,7 @@ public class UnlockData : ScriptableObject
 
     public Texture2D UnlockImage;
     public Mesh UnlockMesh;
-    [Range(1, 3)] public int Rarity = 1;
+    [Range(0, 3)] public int Rarity = 1;
     [SerializeField] private bool bIsUnlockedDefault = false;
     private bool bIsCurrentlyUnlocked = false;
 

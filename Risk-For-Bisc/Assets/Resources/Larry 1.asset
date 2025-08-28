@@ -15,5 +15,5 @@ MonoBehaviour:
   UnlockName: Larry42174
   UnlockImage: {fileID: 2800000, guid: 7725d14dc0dfa74458be5fd3592dbc9d, type: 3}
   UnlockMesh: {fileID: 0}
-  Rarity: 1
+  Rarity: 0
   bIsUnlockedDefault: 0
