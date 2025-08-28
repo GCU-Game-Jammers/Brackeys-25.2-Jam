@@ -115,9 +115,12 @@ public class GachaMachine : MonoBehaviour, IInteractable
             yield return null;
         }
         Camera.main.transform.position = OpenGachaCameraPosition.position;
+
+        AudioSource.PlayOneShot(GatchaDropSound);
+        yield return new WaitForSeconds(1.4f);
+    
         GameObject Ball = Instantiate(winBallPrefab, winBallSpawnLoc.position, Quaternion.identity, gameObject.transform);
         BallMoveAnimations = new List<Animation>(Ball.GetComponentsInChildren<Animation>());
-
         yield return new WaitForSeconds(1f);
         
         RarityVFX.Play(); // rare item buildup
