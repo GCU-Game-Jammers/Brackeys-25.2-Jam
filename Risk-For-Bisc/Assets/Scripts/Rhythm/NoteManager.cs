@@ -6,9 +6,10 @@ using System.Collections;
 
 public enum HitResult 
 { 
-    TooFast, 
+    Good,
+    Great,
     Perfect, 
-    TooSlow 
+    Miss 
 }
 public enum Direction
 {
@@ -42,6 +43,8 @@ public class NoteManager : MonoBehaviour
 
     [Header("Timing & Movement")]
     public float arrowSpeed = 5f;
+    public float goodWindow = 0.2f;
+    public float greatWindow = 0.15f;
     public float perfectWindow = 0.08f;
     public float maxWindow = 0.25f;
     public float despawnY = -5f;
@@ -52,16 +55,21 @@ public class NoteManager : MonoBehaviour
     public KeyCode upKey = KeyCode.UpArrow;
     public KeyCode rightKey = KeyCode.RightArrow;
 
+    public KeyCode altLeftKey = KeyCode.D;
+    public KeyCode altDownKey = KeyCode.F;
+    public KeyCode altUpKey = KeyCode.J;
+    public KeyCode altRightKey = KeyCode.K;
+
     private readonly List<Arrow> active = new List<Arrow>();
 
     public event Action<Arrow, HitResult, float> OnHit; // (arrow, result, deltaSeconds)
 
     void Update()
     {
-        if (Input.GetKeyDown(leftKey)) TryHit(Direction.Left);
-        if (Input.GetKeyDown(downKey)) TryHit(Direction.Down);
-        if (Input.GetKeyDown(upKey)) TryHit(Direction.Up);
-        if (Input.GetKeyDown(rightKey)) TryHit(Direction.Right);
+        if (Input.GetKeyDown(leftKey) || Input.GetKeyDown(altLeftKey)) TryHit(Direction.Left);
+        if (Input.GetKeyDown(downKey) || Input.GetKeyDown(altDownKey)) TryHit(Direction.Down);
+        if (Input.GetKeyDown(upKey) || Input.GetKeyDown(altUpKey)) TryHit(Direction.Up);
+        if (Input.GetKeyDown(rightKey) || Input.GetKeyDown(altRightKey)) TryHit(Direction.Right);
 
         if (Input.GetKeyDown(KeyCode.F1))
             Spawn(Direction.Left);
@@ -80,6 +88,7 @@ public class NoteManager : MonoBehaviour
 
     private void Spawn(Direction dir, float timeTillShouldClick = 0)
     {
+        
         var arrowPrefab = GetArrowPrefab(dir);
         var spawnPoint = GetArrowSpawnPoint(dir);
         var hitPoint = GetArrowHitPoint(dir);
@@ -141,7 +150,7 @@ public class NoteManager : MonoBehaviour
     private IEnumerator SpawnAfterDelay(Direction dir, float delaySeconds, float desiredHitTime)
     {
         yield return new WaitForSecondsRealtime(delaySeconds);
-
+        Debug.Log("Waited " + delaySeconds);
         var arrowPrefab = GetArrowPrefab(dir);
         var spawnPoint = GetArrowSpawnPoint(dir);
         if (arrowPrefab == null || spawnPoint == null)
@@ -204,33 +213,72 @@ public class NoteManager : MonoBehaviour
         float d = now - best.hitTime;
         HitResult result;
         if (Mathf.Abs(d) <= perfectWindow) result = HitResult.Perfect;
-        else if (d < 0) result = HitResult.TooFast;
-        else result = HitResult.TooSlow;
+        else if (Mathf.Abs(d) <= greatWindow) result = HitResult.Great;
+        else if (Mathf.Abs(d) <= goodWindow) result = HitResult.Good;
+        else result = HitResult.Miss;
 
         best.hit = true;
         OnHit?.Invoke(best, result, d);
-        if (result == HitResult.TooFast || result == HitResult.TooSlow)
-            hitNoteSfx.volume = 0.011f;
-        else
-            hitNoteSfx.volume = 0.05f;
-        hitNoteSfx.Play();
+    }
+
+    public void ArrowMissed(Arrow arrow)
+    {
+        OnHit?.Invoke(arrow, HitResult.Miss, 999);
     }
     private IEnumerator ClickButton(Direction dir)
     {
-        var arrowImage = GetArrowHitPoint(dir).GetComponent<RawImage>();
-        var colour = arrowImage.color;
+        var arrowHit = GetArrowHitPoint(dir);
+        if (arrowHit == null) yield break;
+        var raw = arrowHit.GetComponent<RawImage>();
+        if (raw == null) yield break;
 
-        colour.a = 1.0f;
-        arrowImage.color = colour;
-        arrowImage.transform.localScale = new Vector3(0.55f, 0.55f, 0.55f);
+        float durationPop = 0.06f;
+        float durationRelease = 0.12f;
+        float total = durationPop + durationRelease;
+
+        float t = 0f;
+        float startScale = 0.5f;
+        float peakScale = 0.55f;
+        float startAlpha = 0.5f;
+        float peakAlpha = 1f;
+
         tapSfx.Play();
 
-        yield return new WaitForSeconds(0.05f);
+        while (t < total)
+        {
+            t += Time.unscaledDeltaTime;
+            if (t <= durationPop)
+            {
+                float p = t / durationPop;
+                float eased = EaseOutBack(p);
+                float s = Mathf.Lerp(startScale, peakScale, eased);
+                raw.transform.localScale = new Vector3(s, s, s);
+                float a = Mathf.Lerp(startAlpha, peakAlpha, p);
+                var c = raw.color;
+                c.a = a;
+                raw.color = c;
+            }
+            else
+            {
+                float p = (t - durationPop) / durationRelease;
+                float eased = 1 - Mathf.Pow(1 - p, 2);
+                float s = Mathf.Lerp(peakScale, startScale, eased);
+                raw.transform.localScale = new Vector3(s, s, s);
+                float a = Mathf.Lerp(peakAlpha, startAlpha, eased);
+                var c = raw.color;
+                c.a = a;
+                raw.color = c;
+            }
+            yield return null;
+        }
 
-        colour.a = 0.5f;
-        arrowImage.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-        arrowImage.color = colour;
+        var finalc = raw.color;
+        finalc.a = startAlpha;
+        raw.color = finalc;
+        raw.transform.localScale = new Vector3(startScale, startScale, startScale);
     }
+
+    float EaseOutBack(float p) { return 1 + (--p) * p * (2.70158f * p + 1.70158f); }
     public void ClearAll()
     {
         foreach (var a in active.ToArray())

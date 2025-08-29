@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,6 +15,8 @@ public class CameraManager : MonoBehaviour
 
     private PaniniProjection paniniProjection;
 
+    private bool interludeCamEnabled = false;
+    
     private void Awake()
     {
         activeCamera = mainCamera;
@@ -27,21 +30,38 @@ public class CameraManager : MonoBehaviour
             paniniProjection.distance.value = 0.0f;
         }
     }
-
-    public void ChangeCamera(int index)
+    public void FlipCamera()
     {
-        if (index == 0) SwitchToMainCamera();
-        else if (index == 1) StartCoroutine(DJCameraSequence());
-        anim.SetInteger("Camera Index", index);
-    }
+        interludeCamEnabled = !interludeCamEnabled;
+        if (interludeCamEnabled)
+        {
+            StartCoroutine(DJCameraSequence());
 
+            anim.SetInteger("Camera Index", 1);
+        }
+        else
+        {
+            SwitchToMainCamera();
+
+            anim.SetInteger("Camera Index", 0);
+        }
+    }
     private IEnumerator DJCameraSequence()
     {
         SwitchToDjCamera();
 
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(4.0f);
 
         anim.SetInteger("Camera Index", 2);
+
+        yield return new WaitForSeconds(2.5f);
+
+        anim.SetInteger("Camera Index", 3);
+
+        yield return new WaitForSeconds(2.0f);
+
+        anim.SetInteger("Camera Index", 0);
+
     }
 
     #region Camera switching

@@ -7,7 +7,7 @@ using UnityEngine;
 public class RhythmManager : MonoBehaviour
 {
     [Header("Playlist")]
-    public List<Beatmap> beatmaps = new List<Beatmap>();
+    public List<Beatmap> beatmaps;
     public bool loopPlaylist = true;
     public int startIndex = 0;
     public float volume = 0.1f;
@@ -46,12 +46,14 @@ public class RhythmManager : MonoBehaviour
     // Public
     public void Play()
     {
-        if (beatmaps == null || beatmaps.Count == 0) return;
+        beatmaps.RemoveAll(x => x == null);
+        if (beatmaps.Count == 0) { Debug.LogError("No beatmaps assigned."); return; }
         currentPlaylistIndex = Mathf.Clamp(startIndex, 0, beatmaps.Count - 1);
         isPlaying = true;
 
         // Start the first track immediately (scheduled)
         StartTrack(GetNextPlaylistIndex(), GetAvailableTrack(trackA, trackB), AudioSettings.dspTime + startDelay, startFadeDuration);
+        Debug.Log("DSP " + AudioSettings.dspTime + " start delay " + startDelay + " " + AudioSettings.dspTime + startDelay);
     }
 
     public void Stop()
@@ -124,15 +126,20 @@ public class RhythmManager : MonoBehaviour
             double songTime = dspNow - track.dspStartTime;
             if (scheduledDsp <= dspNow + lookAheadTime)
             {
+                double waitTime = scheduledDsp - dspNow;
                 // Call the beat BE
                 /*Debug.Log("Current DSP time = " + dspNow);
                 Debug.Log("Scheduled DSP time = " + scheduledDsp);
                 Debug.Log("Song Time = " + songTime);
                 Debug.Log("DSP = " + ((dspNow + lookAheadTime) - scheduledDsp));*/
-                OnBeatEventScheduled?.Invoke(be, scheduledDsp - dspNow);
+                OnBeatEventScheduled?.Invoke(be, waitTime);
                 if (be.type != 0)
-                    Debug.Log("Beat " + be.type + " should be scheduled for: " + (Time.time + scheduledDsp - dspNow).ToString("F3")
-                        + ", or music time: " + (altSource.time + scheduledDsp - dspNow).ToString("F3"));
+                    Debug.Log(
+                        "Beat " + be.type +
+                        " scheduled at song time: " + be.time.ToString("F3") +
+                        "" + (songTime + waitTime).ToString("F3") + ")"
+                         + " or real time " + Time.time + waitTime
+                    );
                 track.nextIndex++;
             }
             else break;
@@ -168,8 +175,16 @@ public class RhythmManager : MonoBehaviour
             return;
 
         var map = beatmaps[playlistIndex];
-        if (map == null || map.clip == null)
-            throw new Exception("Null Beatmap Clip at index " + playlistIndex);
+        if (map == null)
+        {
+            Debug.LogError($"StartTrack: beatmaps[{playlistIndex}] is NULL. Remove empty entries in the inspector.");
+            return;
+        }
+        if (map.clip == null)
+        {
+            Debug.LogError($"StartTrack: beatmaps[{playlistIndex}].clip is NULL. Assign an AudioClip to the Beatmap asset.");
+            return;
+        }
 
 
         // Prepare
@@ -182,7 +197,7 @@ public class RhythmManager : MonoBehaviour
         track.nextScheduledForPlaylist = false;
 
         track.src.volume = 0f;
-        track.src.PlayScheduled(dspStart);
+        SafePlayScheduled(track.src, dspStart);
 
         // Schedule Fade-In
         StartCoroutine(ScheduleFadeVolume(track.src, dspStart, fadeInDuration, 0f, volume));
@@ -190,7 +205,16 @@ public class RhythmManager : MonoBehaviour
 
         track.nextScheduledForPlaylist = false;
     }
-
+    private void SafePlayScheduled(AudioSource src, double dspStart)
+    {
+        try
+        {
+            src.PlayScheduled(dspStart);
+        }
+        catch (Exception)
+        {
+        }
+    }
     #region Fading Music
     private IEnumerator ScheduleFadeVolume(AudioSource src, double dspTargetStart, float duration, float fromVol, float toVol, bool stopAtEnd = false)
     {
@@ -260,16 +284,6 @@ public class BeatEvent
 {
     public int type;
     public float time;
-}
-
-
-[CreateAssetMenu(menuName = "Audio/Beatmap")]
-public class Beatmap : ScriptableObject
-{
-    public AudioClip clip;
-    public float bpm;
-    public float offset;
-    public TextAsset beatsCSV;
 }
 
 public static class BeatmapImporter

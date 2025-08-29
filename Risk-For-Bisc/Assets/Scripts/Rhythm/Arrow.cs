@@ -11,24 +11,25 @@ public class Arrow : MonoBehaviour
     [HideInInspector] public Vector3 spawnPoint;
     [HideInInspector] public float travelTime;
 
-    private bool hait = false;
 
+    private bool debugHit = false;
     void Update()
     {
         float t = 1 - ((hitTime - Time.time) / travelTime);
 
-        transform.position = Vector3.Lerp(spawnPoint, hitPoint, t);
+        transform.position = Vector3.LerpUnclamped(spawnPoint, hitPoint, t);
 
-        if (t >= 1 || hit)
+        if (t >= 1)
         {
-            noteManager.UnregisterArrow(this);
-            Destroy(gameObject);
+            debugHit = true;
+            //Debug.Log("Hit at time " + Time.time);
         }
 
-        if (Vector3.Distance(hitPoint, transform.position) < 10.0f && !hait)
+        if (t >= 1.2 || hit)
         {
-            hait = true;
-            Debug.Log("Hit at time " + Time.time);
+            noteManager.ArrowMissed(this);
+            noteManager.UnregisterArrow(this);
+            Destroy(gameObject);
         }
     }
 }

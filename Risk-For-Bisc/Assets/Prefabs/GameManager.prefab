@@ -46,3 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rhythmManager: {fileID: 0}
   noteManager: {fileID: 0}
+  cameraManager: {fileID: 0}
+  hitEffectManager: {fileID: 0}
+  perfectHit: {fileID: 21300000, guid: 4db4fba5bd4d1c54687e8036bd3fc21b, type: 3}
+  greatHit: {fileID: 21300000, guid: e414a40d97ee34e48a12ecbd18a07be6, type: 3}
+  goodHit: {fileID: 21300000, guid: 5f25bb82fded28542b94c7de4e3aa3ce, type: 3}
+  missHit: {fileID: 21300000, guid: fb6564a41d4afc242b786dcf79f74e45, type: 3}

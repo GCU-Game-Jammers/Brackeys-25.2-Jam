@@ -9,14 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Banana
-  m_EditorClassIdentifier: Assembly-CSharp::Beatmap
-  clip: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: b0b1e161f5ca2aa4a819ba2a99f2b07d, type: 3}
+  m_Name: Fright Night
+  m_EditorClassIdentifier: 
+  clip: {fileID: 8300000, guid: dd05805e0b4ebef419ee8c2c8afb6822, type: 3}
   bpm: 0
   offset: 0
-  events:
-  - type: 0
-    time: 0
-    payload: 
-    value: 0
+  beatsCSV: {fileID: 4900000, guid: 0c0e1f954e1f2ff46b7d4d08e422bfde, type: 3}

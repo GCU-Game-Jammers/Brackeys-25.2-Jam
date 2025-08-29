@@ -174,15 +174,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beatmaps:
-  - {fileID: 11400000, guid: 66867cdada5671142bf23840ac4d6ab2, type: 2}
-  - {fileID: 11400000, guid: 66867cdada5671142bf23840ac4d6ab2, type: 2}
+  - {fileID: 11400000, guid: 814521eaa6953b443908474428e944df, type: 2}
   - {fileID: 11400000, guid: 66867cdada5671142bf23840ac4d6ab2, type: 2}
   loopPlaylist: 1
   startIndex: 0
   volume: 0.05
   musicSource: {fileID: 3989182792215809865}
-  startDelay: 0
-  lookAheadTime: 1
+  startDelay: 0.30001713053
+  lookAheadTime: 1.25
   crossfadeDuration: 2
   startFadeDuration: 1
   endFadeDuration: 1
