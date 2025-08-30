@@ -7,6 +7,7 @@ using UnityEngine;
 public class RhythmManager : MonoBehaviour
 {
     [Header("Playlist")]
+    public Animator canvasAnimator; 
     public List<Beatmap> beatmaps;
     public bool loopPlaylist = true;
     public int startIndex = 0;
@@ -46,6 +47,8 @@ public class RhythmManager : MonoBehaviour
     // Public
     public void Play()
     {
+        canvasAnimator.SetBool("ShowNoteScreen", true);
+
         beatmaps.RemoveAll(x => x == null);
         if (beatmaps.Count == 0) { Debug.LogError("No beatmaps assigned."); return; }
         currentPlaylistIndex = Mathf.Clamp(startIndex, 0, beatmaps.Count - 1);
@@ -100,10 +103,16 @@ public class RhythmManager : MonoBehaviour
         musicSource.volume = 0f;
         altSource.volume = 0f;
 
-        Play();
+//        Play();
     }
+    public GameObject spaceToBeginPrompt;
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Play();
+            spaceToBeginPrompt.SetActive(false);
+        }
         if (!isPlaying) return;
 
         double dspNow = AudioSettings.dspTime;
@@ -127,6 +136,7 @@ public class RhythmManager : MonoBehaviour
             if (scheduledDsp <= dspNow + lookAheadTime)
             {
                 double waitTime = scheduledDsp - dspNow;
+                Debug.Log("Wait time is: " + waitTime + " with scheduled DSP " + scheduledDsp + " and dspNow " + dspNow);
                 // Call the beat BE
                 /*Debug.Log("Current DSP time = " + dspNow);
                 Debug.Log("Scheduled DSP time = " + scheduledDsp);
@@ -136,9 +146,8 @@ public class RhythmManager : MonoBehaviour
                 if (be.type != 0)
                     Debug.Log(
                         "Beat " + be.type +
-                        " scheduled at song time: " + be.time.ToString("F3") +
-                        "" + (songTime + waitTime).ToString("F3") + ")"
-                         + " or real time " + Time.time + waitTime
+                        " scheduled at song time: " + be.time.ToString("F3")
+                         + " or real time " + (Time.time + waitTime)
                     );
                 track.nextIndex++;
             }

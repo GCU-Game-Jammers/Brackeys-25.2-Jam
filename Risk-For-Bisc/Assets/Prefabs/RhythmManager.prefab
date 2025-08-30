@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 232ac19098a405d439598aa255b4cfac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasAnimator: {fileID: 0}
   beatmaps:
   - {fileID: 11400000, guid: 814521eaa6953b443908474428e944df, type: 2}
   - {fileID: 11400000, guid: 66867cdada5671142bf23840ac4d6ab2, type: 2}

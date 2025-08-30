@@ -4,7 +4,6 @@ public class Arrow : MonoBehaviour
 {
     [HideInInspector] public Direction direction;
     [HideInInspector] public float hitTime;
-    [HideInInspector] public float speed;
     [HideInInspector] public NoteManager noteManager;
     [HideInInspector] public bool hit = false;
     [HideInInspector] public Vector3 hitPoint;

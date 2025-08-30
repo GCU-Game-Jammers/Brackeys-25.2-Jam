@@ -6,6 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class CameraManager : MonoBehaviour
 {
+    public Animator canvasAnimator;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Camera djCamera;
     [SerializeField] private Volume postProcessing;
@@ -49,6 +50,7 @@ public class CameraManager : MonoBehaviour
     private IEnumerator DJCameraSequence()
     {
         SwitchToDjCamera();
+        canvasAnimator.SetBool("ShowNoteScreen", false);
 
         yield return new WaitForSeconds(4.0f);
 
@@ -61,6 +63,7 @@ public class CameraManager : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
 
         anim.SetInteger("Camera Index", 0);
+        canvasAnimator.SetBool("ShowNoteScreen", true);
 
     }
 

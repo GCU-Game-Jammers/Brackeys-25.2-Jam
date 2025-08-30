@@ -42,7 +42,7 @@ public class NoteManager : MonoBehaviour
     public AudioSource hitNoteSfx;
 
     [Header("Timing & Movement")]
-    public float arrowSpeed = 5f;
+    public float travelTime = 1f;
     public float goodWindow = 0.2f;
     public float greatWindow = 0.15f;
     public float perfectWindow = 0.08f;
@@ -96,22 +96,19 @@ public class NoteManager : MonoBehaviour
             throw new Exception("Fix your shit designers");
 
         // compute travel time
-        float distance = spawnPoint.position.y - hitPoint.position.y;
-        distance = Mathf.Abs(distance);
-        float travelTime = distance / arrowSpeed;
 
         if (timeTillShouldClick <= 0f)
         {
+            Debug.Log("Passed through arrow that should have already spawned " + timeTillShouldClick);
             GameObject go = Instantiate(arrowPrefab, spawnPoint.position, Quaternion.identity, container);
             Arrow a = go.GetComponent<Arrow>();
             if (a == null) throw new Exception("LOCK IN DESIGNERS. THIS IS NOOB BEHAVIOUR");
 
             a.direction = dir;
-            a.speed = arrowSpeed;
             a.noteManager = this;
             a.hitTime = Time.time + travelTime;
             a.hitPoint = hitPoint.transform.position;
-            a.travelTime = timeTillShouldClick;
+            a.travelTime = travelTime;
             a.spawnPoint = spawnPoint.transform.position;
 
 
@@ -119,24 +116,29 @@ public class NoteManager : MonoBehaviour
             return;
         }
 
+
+
         // Desired hit time in future (seconds from now)
         float desiredHitTime = Time.time + timeTillShouldClick;
         float spawnTime = desiredHitTime - travelTime;
         float delay = spawnTime - Time.time;
 
+        Debug.Log("Delay is " + delay + " with time " + Time.time + " and travel time " + travelTime +" Time till should click " + timeTillShouldClick);
+
+
         // If spawn time is already passed or too soon, spawn immediately and make it hit as soon as possible
         if (delay <= 0f)
         {
+            Debug.Log("Delay is " + delay);
             GameObject go = Instantiate(arrowPrefab, spawnPoint.position, Quaternion.identity, container);
             Arrow a = go.GetComponent<Arrow>();
             if (a == null) throw new Exception("LOCK IN DESIGNERS. THIS IS NOOB BEHAVIOUR");
 
             a.direction = dir;
-            a.speed = arrowSpeed;
             a.noteManager = this;
             a.hitTime = Time.time + travelTime; // hit as soon as possible
             a.hitPoint = hitPoint.transform.position;
-            a.travelTime = timeTillShouldClick;
+            a.travelTime = travelTime;
             a.spawnPoint = spawnPoint.transform.position;
 
             RegisterArrow(a);
@@ -165,11 +167,10 @@ public class NoteManager : MonoBehaviour
         }
 
         a.direction = dir;
-        a.speed = arrowSpeed;
         a.noteManager = this;
         a.hitTime = desiredHitTime; // we delayed spawn so this will be correct
         a.hitPoint = GetArrowHitPoint(dir).transform.position;
-        a.travelTime = desiredHitTime - Time.time;
+        a.travelTime = travelTime;
         a.spawnPoint = spawnPoint.transform.position;
 
         RegisterArrow(a);
